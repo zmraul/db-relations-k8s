@@ -67,6 +67,7 @@ class DBRelationK8sCharm(CharmBase):
         if not(host or port):
             logger.error("Didn't get any data from relation, deferring")
             event.defer()
+            return
 
         # try to connect to Redis
         client = Redis(host=host, port=port)
