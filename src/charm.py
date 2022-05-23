@@ -64,7 +64,7 @@ class DBRelationK8sCharm(CharmBase):
                 host = self._stored.redis_relation[redis_unit]["hostname"]
                 port = self._stored.redis_relation[redis_unit]["port"]
 
-        if not(host or port):
+        if not(host and port):
             logger.error("Didn't get any data from relation, deferring")
             event.defer()
 
