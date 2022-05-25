@@ -19,7 +19,7 @@ from ops.charm import CharmBase
 from ops.framework import StoredState
 from ops.main import main
 from ops.model import ActiveStatus, BlockedStatus, WaitingStatus
-from redis import Redis
+from redis import Redis, RedisError
 
 logger = logging.getLogger(__name__)
 
@@ -49,10 +49,13 @@ class DBRelationK8sCharm(CharmBase):
         self.unit.status = BlockedStatus("Waiting relation to database")
 
     #### REDIS ####
-    def _redis_relation_created(self, _):
+    def _redis_relation_created(self, event):
         """"""
         logger.info("Redis application joined!")
         self.unit.status = WaitingStatus("Setting up relation")
+
+        for relation in self.model.relations["redis"]:
+            logger.info(f'RELATIONS CREATED: {relation.app.name}')
     
     def _redis_relation_updated(self, event):
         """Handler for custom relation updated event."""
@@ -73,7 +76,7 @@ class DBRelationK8sCharm(CharmBase):
         client = Redis(host=host, port=port)
         if client.ping():
             self.unit.status = ActiveStatus()
-            logger.info("PONG obtained :)")
+            logger.info(f"PONG obtained from {host}:{port} :)")
         else:
             msg = f"Redis database connection failed - {host}:{port}"
             self.unit.statis = BlockedStatus(msg)
