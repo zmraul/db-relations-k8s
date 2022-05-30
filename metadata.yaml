@@ -14,12 +14,3 @@ summary: |
 requires:
   redis:
     interface: redis
-
-containers:
-  base-container:
-    resource: base-image
-resources:
-  base-image:
-    type: oci-image
-    description: busybox docker image
-    upstream: busybox
