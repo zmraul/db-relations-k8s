@@ -66,6 +66,7 @@ class DBRelationK8sCharm(CharmBase):
         for redis_unit in self._stored.redis_relation:
                 host = self._stored.redis_relation[redis_unit]["hostname"]
                 port = self._stored.redis_relation[redis_unit]["port"]
+                logger.info(f"Host: {host} - Port: {port}")
 
         if not(host and port):
             logger.warning("Didn't get any data from relation, deferring")
@@ -74,12 +75,19 @@ class DBRelationK8sCharm(CharmBase):
 
         # try to connect to Redis
         client = Redis(host=host, port=port)
-        if client.ping():
+        try:
+            result = client.ping()
+        except RedisError as e:
+            logger.error(e)
+            self.unit.status = BlockedStatus("Redis exception")
+            return
+
+        if result:
             self.unit.status = ActiveStatus()
             logger.info(f"PONG obtained from {host}:{port} :)")
         else:
             msg = f"Redis database connection failed - {host}:{port}"
-            self.unit.statis = BlockedStatus(msg)
+            self.unit.status = BlockedStatus(msg)
             logger.error(msg)
             event.defer()
 
