@@ -5,21 +5,8 @@
 # For a complete list of supported options, see:
 # https://juju.is/docs/sdk/metadata-reference
 
-name: database-k8s-tester
+name: ez-k8s
 description: |
   Database relation tester for k8s charms.
 summary: |
   A charm to test database relations for k8s charms.
-
-requires:
-  redis:
-    interface: redis
-
-containers:
-  base-container:
-    resource: base-image
-resources:
-  base-image:
-    type: oci-image
-    description: busybox docker image
-    upstream: busybox
