@@ -4,12 +4,12 @@ import logging
 
 from ops.charm import CharmBase
 from ops.main import main
-from ops.model import BlockedStatus
+from ops.model import BlockedStatus, WaitingStatus
 
 logger = logging.getLogger(__name__)
 
 
-class EzCharm(CharmBase):
+class StatusCharm(CharmBase):
     """Charm the service."""
 
     def __init__(self, *args):
@@ -18,8 +18,8 @@ class EzCharm(CharmBase):
         self.framework.observe(self.on.start, self._on_start)
 
     def _on_start(self, _) -> None:
-        self.unit.status = BlockedStatus("Waiting on stuff")
+        self.unit.status = WaitingStatus("Waiting on stuff")
 
 
 if __name__ == "__main__":
-    main(EzCharm)
+    main(StatusCharm)

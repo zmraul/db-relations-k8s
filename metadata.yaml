@@ -5,7 +5,7 @@
 # For a complete list of supported options, see:
 # https://juju.is/docs/sdk/metadata-reference
 
-name: ez-k8s
+name: status-charm
 description: |
   Database relation tester for k8s charms.
 summary: |
