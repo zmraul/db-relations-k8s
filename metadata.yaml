@@ -10,3 +10,7 @@ description: |
   Database relation tester for k8s charms.
 summary: |
   A charm to test database relations for k8s charms.
+
+provides:
+  metrics-endpoint:
+    interface: prometheus_scrape
