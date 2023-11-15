@@ -63,10 +63,16 @@ class DBRelationK8sCharm(CharmBase):
         host = None
         port = None
          # FIXME: fix this way of accessing :S
-        for redis_unit in self._stored.redis_relation:
-                host = self._stored.redis_relation[redis_unit]["hostname"]
-                port = self._stored.redis_relation[redis_unit]["port"]
-                logger.info(f"Host: {host} - Port: {port}")
+        for relation in self.model.relations["redis"]:
+            for unit in relation.units:
+                host = relation.data[unit]["hostname"]
+                port = relation.data[unit]["port"]
+                logger.info(f"Relation {relation}, Unit: {unit} --- Host: {host} - Port: {port}")
+        
+        # for redis_unit in self._stored.redis_relation:
+        #         host = self._stored.redis_relation[redis_unit]["hostname"]
+        #         port = self._stored.redis_relation[redis_unit]["port"]
+        #         logger.info(f"Host: {host} - Port: {port}")
 
         if not(host and port):
             logger.warning("Didn't get any data from relation, deferring")
