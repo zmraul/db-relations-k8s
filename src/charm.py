@@ -60,24 +60,21 @@ class DBRelationK8sCharm(CharmBase):
     def _redis_relation_updated(self, event):
         """Handler for custom relation updated event."""
 
-        host = None
-        port = None
-         # FIXME: fix this way of accessing :S
-        for relation in self.model.relations["redis"]:
-            for unit in relation.units:
-                host = relation.data[unit]["hostname"]
-                port = relation.data[unit]["port"]
-                logger.info(f"Relation {relation}, Unit: {unit} --- Host: {host} - Port: {port}")
-        
-        # for redis_unit in self._stored.redis_relation:
-        #         host = self._stored.redis_relation[redis_unit]["hostname"]
-        #         port = self._stored.redis_relation[redis_unit]["port"]
-        #         logger.info(f"Host: {host} - Port: {port}")
+        url = self.redis.get_url()
+        data = self.redis.get_relation_data()
+        if not data:
+            logger.info("Relation being removed")
+            return
+
+        host = data.get("hostname")
+        port = data.get("port")
 
         if not(host and port):
             logger.warning("Didn't get any data from relation, deferring")
             event.defer()
             return
+
+        logger.info(f"From relation:\n\t- host {host}\n\t- port {port}\n\t- url {url}")
 
         # try to connect to Redis
         client = Redis(host=host, port=port)
@@ -87,6 +84,8 @@ class DBRelationK8sCharm(CharmBase):
             logger.error(e)
             self.unit.status = BlockedStatus("Redis exception")
             return
+        finally:
+            client.close()
 
         if result:
             self.unit.status = ActiveStatus()
